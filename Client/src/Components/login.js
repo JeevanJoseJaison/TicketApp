@@ -12,8 +12,7 @@ const Login = (props) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [warning, setWarning] = useState(false);
-    const loginStatus = useSelector((state)=>state.status)
-  
+   
 
     const login = async() => {
 
@@ -77,7 +76,7 @@ const Login = (props) => {
 
                             <div className="text-center text-lg-start mt-4 pt-2">
                                 <button type="button" className="btn btn-primary btn-lg" onClick={login}>Login</button>
-                                <p className="small fw-bold mt-2 pt-1 mb-0">Login to your account <a href="signup" className="link-danger">Sign Up</a></p>
+                                <p className="small fw-bold mt-2 pt-1 mb-0">Login to your account <a onClick={()=>navigate("/signup")} className="link-danger">Sign Up</a></p>
                             </div>
 
                         </form>

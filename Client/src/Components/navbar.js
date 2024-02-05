@@ -1,11 +1,13 @@
 import React from "react";
-import { UseSelector, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setStatus} from "../Store/Action";
 
-const Navbar = ({ setModalOpen, setLoginStatus, setArchive, archive }) => {
-
+const Navbar = ({ setModalOpen, setArchive, archive }) => {
+    const dispatch = useDispatch();
     const loginStatus = useSelector((state) => state.status)
-
+    const handleCLick =() =>{
+        dispatch(setStatus(false))        
+    }
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container">
@@ -21,8 +23,7 @@ const Navbar = ({ setModalOpen, setLoginStatus, setArchive, archive }) => {
                     </ul> : <ul className="navbar-nav me-auto mb-2 mb-lg-0"></ul>}
      
                      <div className="d-flex">
-                        {(loginStatus) ? <a className="btn btn-outline-primary" href="/login">Sign Out</a> :
-                            <a className="btn btn-outline-primary" href="signup">Sign Up</a>}
+                        {(loginStatus) &&<a className="btn btn-outline-primary"  onClick={()=>(handleCLick("/login"))}>Sign Out</a>}
                 
                     
                 </div>

@@ -10,9 +10,15 @@ import Tasks from './Tasks';
 
 function Home({ status, setStatus , archive }) {
     const dispatch = useDispatch();  
+    const navigate = useNavigate();
+    const loginStatus = useSelector((state)=>state.status)
     const tasks = useSelector((state) => state.task);
     const atasks = useSelector((state) => state.atask);
      
+    useEffect(()=>{
+    if(!loginStatus)
+    navigate("/login")
+    },[loginStatus])
 
     // const tasks = [
     //     { Taskname: "Chennai", Description: "Raj@gmail.com", Assigne: "Raj" },

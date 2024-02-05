@@ -14,15 +14,16 @@ function App() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [status, setStatus] = useState();
   const [archive, setArchive] = useState(false);
-console.log(loginStatus);
+  const [page , setPage] = useState()
+ 
   return (
     <div className="app">
-      <Navbar setModalOpen={setModalOpen}  setArchive={setArchive} archive={archive} />
+      <Navbar setModalOpen={setModalOpen}  setArchive={setArchive} archive={archive} setPage ={setPage}/>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={loginStatus ?<Home setStatus={setStatus} status={status} archive={archive} /> : <Navigate to ="/login"/>} />
-          <Route path="/login" element={loginStatus?<Navigate to ="/"/>:<Login/>} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={loginStatus?<Navigate to ="/"/>:<Login />} />
+          <Route path="/signup" element={<SignUp page={page}/>} />
         </Routes>
       </BrowserRouter>
       <Modal setStatus={setStatus} status={status} setModalOpen={setModalOpen} isOpen={isModalOpen}
