@@ -31,7 +31,7 @@ function Home({ status, setStatus , archive }) {
 
     const fetchTask = async () => {
         try {
-            const response = await Axios.get("http://localhost:4000/ticket/getTask");
+            const response = await Axios.get("https://ticketapps1.onrender.com/ticket/getTask");
             if (response) {
                 dispatch(setTask(response.data.Tasks))
                 dispatch(setAtask(response.data.Atasks))
@@ -42,7 +42,7 @@ function Home({ status, setStatus , archive }) {
     }
     const fetchUsers = async () => {
         try {
-            const response = await Axios.get("http://localhost:4000/ticket/getUsers");
+            const response = await Axios.get("https://ticketapps1.onrender.com/ticket/getUsers");
             if (response) {
                 dispatch(setUsers(response.data))
             }
@@ -52,7 +52,7 @@ function Home({ status, setStatus , archive }) {
     }
     const deleteTask = async (id) => {
         try {
-            const response = await Axios.post("http://localhost:4000/ticket/deleteTask", { id: id });
+            const response = await Axios.post("https://ticketapps1.onrender.com/ticket/deleteTask", { id: id });
             if (response) {
                 setStatus(!status)
             }
@@ -63,7 +63,7 @@ function Home({ status, setStatus , archive }) {
     const archiveTask = async (id) => {
        console.log(id,archive);
         try {
-            const response = await Axios.post("http://localhost:4000/ticket/archiveTask", { id: id , flag : archive});
+            const response = await Axios.post("https://ticketapps1.onrender.com/ticket/archiveTask", { id: id , flag : archive});
             if (response) {
                 console.log(response.data);
                 setStatus(!status)

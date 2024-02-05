@@ -30,7 +30,7 @@ const SignUp = ({page}) => {
     const register = (e) => {
         console.log(user);
         e.preventDefault();
-        Axios.post("http://localhost:4000/ticket/register", {
+        Axios.post("https://ticketapps1.onrender.com/ticket/register", {
             email: user.email,
             name: user.name,
             password: user.password,

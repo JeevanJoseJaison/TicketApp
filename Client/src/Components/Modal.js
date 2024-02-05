@@ -67,7 +67,7 @@ console.log(loginStatus);
 
     const updateData = () => {
 
-        Axios.post("http://localhost:4000/ticket/addTask", {
+        Axios.post("https://ticketapps1.onrender.com/ticket/addTask", {
             name: data.Name,
             desc: data.Description,
             assigne: data.Assigne
