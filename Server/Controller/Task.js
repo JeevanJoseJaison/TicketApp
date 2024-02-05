@@ -1,4 +1,5 @@
-const register =(req,res) =>{
+const register = (req, res) => {
+    const connection = req.dbConnection;
     const { name, email, password, admin } = req.body;
     connection.query("INSERT INTO Users (Username, email, password , Admin) VALUES (?,?,?,?)", [name, email, password, admin],
         (err, result) => {
@@ -11,10 +12,12 @@ const register =(req,res) =>{
         });
 }
 
-const login =(req,res) =>{
+const login = (req, res) => {
+    const connection = req.dbConnection;
     const { email, password } = req.body;
     connection.query("SELECT Username ,Admin FROM Users WHERE email = ? AND password = ?", [email, password],
         (err, result) => {
+            connection.release();
             if (err) {
                 req.setEncoding({ err: err });
             } else {
@@ -28,42 +31,44 @@ const login =(req,res) =>{
     )
 }
 
-const getTask = async (req,res)=>{
-
+const getTask = async (req, res) => {
+    const connection = req.dbConnection;
     connection.query('SELECT * FROM Tasks', (tasksError, tasksResult) => {
         if (tasksError) {
-          console.error('Error retrieving Tasks:', tasksError.message);
-          res.status(500).send('Internal Server Error');
-          return;
-        }
-    
-        connection.query('SELECT * FROM Atasks', (atasksError, atasksResult) => {
-          if (atasksError) {
-            console.error('Error retrieving Atasks:', atasksError.message);
+            console.error('Error retrieving Tasks:', tasksError.message);
             res.status(500).send('Internal Server Error');
             return;
-          }
-    
-          const combinedResults = {
-            Tasks: tasksResult,
-            Atasks: atasksResult
-          };
-    
-          // Send the combined results as JSON
-          res.json(combinedResults);
+        }
+
+        connection.query('SELECT * FROM Atasks', (atasksError, atasksResult) => {
+            if (atasksError) {
+                console.error('Error retrieving Atasks:', atasksError.message);
+                res.status(500).send('Internal Server Error');
+                return;
+            }
+
+            const combinedResults = {
+                Tasks: tasksResult,
+                Atasks: atasksResult
+            };
+
+            // Send the combined results as JSON
+            res.json(combinedResults);
         });
-      });
+        connection.release();
+    });
 
 
 }
 
-const getUsers =(req,res)=>{
+const getUsers = (req, res) => {
+    const connection = req.dbConnection;
     connection.query("SELECT Username FROM Users", [],
         (err, result) => {
             if (err) {
                 req.setEncoding({ err: err });
             } else {
-
+                connection.release();
                 if (result.length > 0) {
                     const outputArray = result.map(item => item.Username);
                     res.send(outputArray);
@@ -75,12 +80,13 @@ const getUsers =(req,res)=>{
     )
 }
 
-const addTask =(req,res) =>{
+const addTask = (req, res) => {
+    const connection = req.dbConnection;
     const { name, desc, assigne } = req.body;
     connection.query("INSERT INTO Tasks(Taskname, Description, Assigne) VALUES (?,?,?)", [name, desc, assigne],
         (err, result) => {
             if (result) {
-
+                connection.release();
                 res.status(200).json({ message: 'Task added successfully' });
             } else {
                 res.status(400).json({ message: 'Task addition failed. Please check your data and try again.' });
@@ -88,12 +94,13 @@ const addTask =(req,res) =>{
         });
 }
 
-const deleteTask = (req,res) => {
+const deleteTask = (req, res) => {
+    const connection = req.dbConnection;
     const { id } = req.body;
     connection.query("DELETE FROM Tasks WHERE TaskId = ?", [id],
         (err, result) => {
             if (result) {
-
+                connection.release();
                 res.status(200).json({ message: 'Task deleted successfully' });
             } else {
                 res.status(400).json({ message: 'Task deletion failed. Please check your data and try again.' });
@@ -101,8 +108,9 @@ const deleteTask = (req,res) => {
         });
 }
 
-const archiveTask = (id, res) => {
-
+const archiveTask = (req, res) => {
+    const connection = req.dbConnection;
+    const {id} = req.body;
     connection.query('INSERT INTO Atasks SELECT * FROM Tasks WHERE TaskId = ?',
         [id],
         (err, result) => {
@@ -112,11 +120,14 @@ const archiveTask = (id, res) => {
             } else {
                 res.status(400).json({ message: 'Task Archive failed. Please check your data and try again.' });
             }
+            connection.release();
         });
 
 }
 
-const unarchiveTask = (id, res) => {
+const unarchiveTask = (req, res) => {
+    const connection = req.dbConnection;
+    const {id} = req.body;
     connection.query('INSERT INTO Tasks SELECT * FROM Atasks WHERE TaskId = ?',
         [id],
         (err, result) => {
@@ -126,6 +137,7 @@ const unarchiveTask = (id, res) => {
             } else {
                 res.status(400).json({ message: 'Task Unarchive failed. Please check your data and try again.' });
             }
+            connection.release();
         });
 
 }

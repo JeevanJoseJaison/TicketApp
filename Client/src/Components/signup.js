@@ -1,16 +1,15 @@
 import { useState } from "react";
 import Axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+    const navigate = useNavigate();
     const [user, setUser] = useState({
         name: "",
         email: "",
         password: "",
         admin: false
     })
-    const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
-    const [password, setPassword] = useState("");
     const [registerStatus, setRegisterStatus] = useState("");
 
     const handleChange = (e) => {
@@ -38,6 +37,7 @@ const SignUp = () => {
             admin: user.admin
         }).then((response) => {
             setRegisterStatus(response.data.message);
+            navigate("/")
         }).catch((error) => {
             setRegisterStatus('Registration failed. Please try again.');
         }).finally(() => {

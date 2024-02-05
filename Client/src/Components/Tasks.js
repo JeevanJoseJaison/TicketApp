@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import "./Home.css"
-import { Edit, Delete, Archive, Filter , Unarchive } from '../Icons/icons';
+import { Edit, Delete, Archive, Ascend , Descend, Unarchive } from '../Icons/icons';
 import { useSelector } from 'react-redux';
 
 
 
-function Tasks({ tasks, deleteTask ,archiveTask ,archive}) {
+function Tasks({ tasks, deleteTask, archiveTask, archive }) {
     const userName = useSelector((state) => state.userName);
-
-
+    const [asc, setAsc] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [sortBy, setSortBy] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +17,7 @@ function Tasks({ tasks, deleteTask ,archiveTask ,archive}) {
 
 
     const handleSort = (column) => {
+        setAsc(!asc);
         setSortBy(column);
     };
 
@@ -41,8 +41,10 @@ function Tasks({ tasks, deleteTask ,archiveTask ,archive}) {
         task.Assigne.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const sortedTasks = sortBy
+    const sortedTasks = (asc) ? sortBy
         ? filteredTasks.slice().sort((a, b) => a[sortBy].localeCompare(b[sortBy]))
+        : filteredTasks : sortBy
+        ? filteredTasks.slice().sort((a, b) => b[sortBy].localeCompare(a[sortBy]))
         : filteredTasks;
 
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -67,7 +69,7 @@ function Tasks({ tasks, deleteTask ,archiveTask ,archive}) {
                         <th>Task Name</th>
                         <th>Description</th>
                         <th className="iconColumnHeader">Assignee<span onClick={() => handleSort('Assigne')} className="filterIcon">
-                            <Filter />
+                            {(asc)?<Ascend/>:<Descend/>}
                         </span></th>
                         <th>Actions</th>
                     </tr>
@@ -79,8 +81,8 @@ function Tasks({ tasks, deleteTask ,archiveTask ,archive}) {
                             <td>{task.Description}</td>
                             <td>{task.Assigne}</td>
                             {(userName.Admin === 1 || userName.Username === task.Assigne) ? <td style={{ width: '156px' }}>
-                                <button onClick={() => handleDelete(task.TaskId)}><Delete /></button>
-                                <button onClick={() => handleArchive(task.TaskId)}>{(!archive)?<Archive />:<Unarchive/>}</button>
+                            {(!archive) &&<button onClick={() => handleDelete(task.TaskId)}><Delete /></button>}
+                                <button onClick={() => handleArchive(task.TaskId)}>{(!archive) ? <Archive /> : <Unarchive />}</button>
                             </td> : <td></td>}
                         </tr>
                     ))}

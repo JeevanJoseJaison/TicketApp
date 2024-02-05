@@ -10,14 +10,14 @@ app.use(express.json());
 app.use(cors());
 
 
-// app.use(express.static(path.join(__dirname, '../client/build')));
+// app.use(express.static(path.join(__dirname, '../Client/build')));
 
 // app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+//   res.sendFile(path.join(__dirname, '.build', 'index.html'));
 // });
 
 
-global.connection = mysql.createConnection({
+const connection = mysql.createPool({
     user: "sql6681691",
     host: "sql6.freesqldatabase.com",
     password: "ySvXL1MT1k",
@@ -26,51 +26,61 @@ global.connection = mysql.createConnection({
 })
 
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to database:', err);
-        return;
-    }
+const dbConnectionMiddleware = (req, res, next) => {
+    connection.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error acquiring connection from pool:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        req.dbConnection = connection;
 
-    console.log('Connected to the database');
+        next();
+    });
+};
+
+connection.getConnection((err, connection) => {
+    if (err) {
+        console.error('Error establishing connection to the database:', err.message);
+    } else {
+        console.log('Connected to the database');
+        connection.release();
+    }
 });
 
-app.post("/ticket/register", (req, res) => {
-   console.log(req.body);
-    //controller.register(req,res);
+app.post("/ticket/register", dbConnectionMiddleware, (req, res) => {
+    controller.register(req, res);
 })
 
-app.post("/ticket/login", (req, res) => {
+app.post("/ticket/login", dbConnectionMiddleware, (req, res) => {
     console.log(req.body);
-   controller.login(req,res)
+    controller.login(req, res)
 })
 
-app.get("/ticket/getTask", (req, res) => {
-    console.log("hello");
-   controller.getTask(req,res)
+app.get("/ticket/getTask", dbConnectionMiddleware, (req, res) => {
+    controller.getTask(req, res)
 })
 
-app.get("/ticket/getUsers", (req, res) => {
-    controller.getUsers(req,res)
+app.get("/ticket/getUsers", dbConnectionMiddleware, (req, res) => {
+    controller.getUsers(req, res)
 })
 
-app.post("/ticket/addTask", (req, res) => {
-  controller.addTask(req,res);
+app.post("/ticket/addTask", dbConnectionMiddleware, (req, res) => {
+    controller.addTask(req, res);
 })
 
-app.post("/ticket/deleteTask", (req, res) => {
-    controller.deleteTask(req,res);
+app.post("/ticket/deleteTask", dbConnectionMiddleware, (req, res) => {
+    controller.deleteTask(req, res);
 })
 
-app.post("/ticket/archiveTask", (req, res) => {
-    const { id, flag } = req.body;
+app.post("/ticket/archiveTask", dbConnectionMiddleware, (req, res) => {
+    const {flag } = req.body;
 
     if (!flag) {
-        controller.archiveTask(id,res);
+        controller.archiveTask(req, res);
     }
     else {
-        controller.unarchiveTask(id,res);
-   }   
+        controller.unarchiveTask(req, res);
+    }
 })
 
 
